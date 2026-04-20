@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+
+# C/C++
+*.o
+*.exe
+*.out
+
+# Sistema
+.DS_Store
+Thumbs.db
