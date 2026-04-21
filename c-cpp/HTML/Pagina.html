@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safecore Tecnologia — Infraestrutura, Redes & Software</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060b12;--bg2:#0c1420;--bg3:#111e30;
+  --accent:#00e5ff;--accent2:#0099bb;--accent3:#00ff88;
+  --text:#eef2f8;--muted:#6b85a0;--muted2:#8fa5bc;
+  --border:rgba(0,229,255,0.1);--border2:rgba(0,229,255,0.22);
+  --card:rgba(12,20,32,0.85);--whats:#25D366;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
+#cursor{position:fixed;width:10px;height:10px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(0,229,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .08s,top .08s,width .25s,height .25s}
+.page{display:none}.page.active{display:block;animation:pageIn .4s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 3.5rem;height:70px;background:rgba(6,11,18,0.82);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
+nav.scrolled{background:rgba(6,11,18,0.97)}
+.logo{display:flex;align-items:center;gap:12px;cursor:pointer}
+.logo-hex{width:34px;height:34px;background:var(--accent);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:hexPulse 3s ease-in-out infinite;position:relative}
+.logo-hex::after{content:'';position:absolute;top:50%;left:50%;width:14px;height:14px;background:var(--bg);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);transform:translate(-50%,-50%)}
+@keyframes hexPulse{0%,100%{filter:drop-shadow(0 0 6px rgba(0,229,255,.6))}50%{filter:drop-shadow(0 0 18px rgba(0,229,255,1))}}
+.logo-text{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.logo-text em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:.2rem}
+.nav-link{background:none;border:none;color:var(--muted2);font-family:'Syne',sans-serif;font-size:13.5px;font-weight:500;letter-spacing:.04em;padding:8px 16px;border-radius:4px;cursor:pointer;transition:color .2s;position:relative}
+.nav-link::after{content:'';position:absolute;bottom:4px;left:50%;right:50%;height:1.5px;background:var(--accent);transition:all .25s}
+.nav-link:hover,.nav-link.active{color:var(--text)}
+.nav-link:hover::after,.nav-link.active::after{left:16px;right:16px}
+.nav-link.active{color:var(--accent)}
+.nav-cta-btn{background:var(--accent);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;padding:9px 20px;border-radius:4px;cursor:pointer;transition:all .2s;margin-left:8px}
+.nav-cta-btn:hover{background:#00ccee;transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,229,255,.4)}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
+.nav-hamburger span{display:block;width:24px;height:1.5px;background:var(--text);transition:all .3s}
+.mobile-menu{display:none;position:fixed;top:70px;left:0;right:0;background:rgba(6,11,18,.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1.5rem 2rem;z-index:499;flex-direction:column;gap:.5rem}
+.mobile-menu.open{display:flex}
+.mobile-menu .nav-link{text-align:left;font-size:16px;padding:12px 8px}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:6rem 2rem 4rem;text-align:center}
+#particles-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.tech-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.04) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite;z-index:2}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:60px 60px}}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,11,18,.3) 0%,rgba(6,11,18,.15) 40%,rgba(6,11,18,.7) 85%,rgba(6,11,18,1) 100%);z-index:3}
+.hero-content{position:relative;z-index:4;max-width:820px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);border:1px solid var(--border2);padding:6px 14px;border-radius:2px;background:rgba(0,229,255,.05);letter-spacing:.1em;margin-bottom:2rem;animation:fadeInUp .8s ease both}
+.badge-dot{width:6px;height:6px;background:var(--accent3);border-radius:50%;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hero h1{font-size:clamp(2.8rem,6vw,5rem);font-weight:800;line-height:1.0;letter-spacing:-.03em;margin-bottom:1.5rem;animation:fadeInUp .9s .1s ease both}
+.hero h1 .accent{color:transparent;-webkit-text-stroke:1.5px var(--accent);display:block}
+.hero h1 .solid{color:var(--text);display:block}
+.hero-desc{font-size:17px;color:var(--muted2);max-width:560px;margin:0 auto 2.5rem;line-height:1.75;font-weight:400;animation:fadeInUp 1s .2s ease both}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeInUp 1s .3s ease both}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:8px}
+.scroll-hint span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--accent),transparent);animation:scrollLine 2s ease-in-out infinite}
+@keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* BUTTONS */
+.btn-primary{background:var(--accent);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;padding:14px 32px;border-radius:3px;cursor:pointer;transition:all .25s;text-transform:uppercase}
+.btn-primary:hover{background:#00ccee;transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,229,255,.4)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.2);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;letter-spacing:.06em;padding:14px 32px;border-radius:3px;cursor:pointer;transition:all .25s;text-transform:uppercase}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.btn-whats{background:var(--whats);color:#fff;border:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;padding:14px 28px;border-radius:3px;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:10px;text-transform:uppercase;text-decoration:none}
+.btn-whats svg{width:20px;height:20px;fill:#fff}
+.btn-whats:hover{background:#1da851;transform:translateY(-2px);box-shadow:0 8px 30px rgba(37,211,102,.4)}
+
+/* STATS */
+.stats-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.stat-item{padding:2rem 2.5rem;border-right:1px solid var(--border);text-align:center}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:500;color:var(--accent);line-height:1;margin-bottom:6px}
+.stat-label{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+
+/* SECTION */
+.section{padding:6rem 3.5rem;max-width:1180px;margin:0 auto}
+.sec-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.sec-eyebrow-line{width:32px;height:1px;background:var(--accent)}
+.sec-eyebrow span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase}
+.section h2{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.75rem;line-height:1.1}
+.section-sub{color:var(--muted2);font-size:16px;line-height:1.75;max-width:540px;margin-bottom:3.5rem;font-weight:400}
+
+/* SERVICE CARDS */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+.svc-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:2rem 2rem 1.75rem;position:relative;overflow:hidden;transition:all .3s;backdrop-filter:blur(8px)}
+.svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);transform:scaleX(0);transition:transform .4s}
+.svc-card:hover::before{transform:scaleX(1)}
+.svc-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.svc-card-num{position:absolute;top:1.5rem;right:1.75rem;font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(0,229,255,.2)}
+.svc-icon-wrap{width:52px;height:52px;background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.18);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1.4rem;font-size:22px;transition:all .3s}
+.svc-card:hover .svc-icon-wrap{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.35)}
+.svc-card h3{font-size:17px;font-weight:700;margin-bottom:.6rem;letter-spacing:-.01em}
+.svc-card p{font-size:13.5px;color:var(--muted2);line-height:1.65;margin-bottom:1.4rem;font-weight:400}
+.svc-tags{display:flex;flex-wrap:wrap;gap:6px}
+.stag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.15);padding:3px 9px;border-radius:2px;letter-spacing:.04em}
+
+/* MOSAIC */
+.img-mosaic{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:220px 180px;gap:12px;margin-top:4rem;border-radius:8px;overflow:hidden}
+.mosaic-item{overflow:hidden;position:relative;border-radius:4px}
+.mosaic-item:first-child{grid-column:1/3;grid-row:1}
+.mosaic-item img{width:100%;height:100%;object-fit:cover;filter:brightness(.65) saturate(1.1);transition:transform .5s,filter .4s}
+.mosaic-item:hover img{transform:scale(1.06);filter:brightness(.85) saturate(1.3)}
+.mosaic-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(6,11,18,.85) 100%)}
+.mosaic-label{position:absolute;bottom:12px;left:14px;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--text);text-transform:uppercase}
+
+/* PRODUCTS */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem}
+.prod-card{background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:all .3s}
+.prod-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.prod-img{width:100%;height:130px;object-fit:cover;filter:brightness(.65) saturate(.8);transition:filter .3s;display:block}
+.prod-card:hover .prod-img{filter:brightness(.85) saturate(1.1)}
+.prod-body{padding:1.1rem 1.25rem 1.25rem}
+.prod-body h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.prod-body p{font-size:12px;color:var(--muted2);line-height:1.5;margin-bottom:10px}
+.prod-price{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--accent3);font-weight:500}
+
+/* SOBRE */
+.sobre-layout{display:grid;grid-template-columns:1.1fr 0.9fr;gap:4rem;align-items:start}
+.sobre-img-wrap{position:relative;border-radius:6px;overflow:hidden}
+.sobre-img-wrap img{width:100%;height:420px;object-fit:cover;filter:brightness(.65) saturate(1.2);display:block}
+.sobre-img-badge{position:absolute;bottom:1.5rem;left:1.5rem;background:rgba(6,11,18,.85);backdrop-filter:blur(10px);border:1px solid var(--border2);border-radius:4px;padding:12px 18px}
+.sobre-img-badge strong{display:block;font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--accent);font-weight:500}
+.sobre-img-badge span{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.sobre-text p{color:var(--muted2);font-size:15px;line-height:1.8;margin-bottom:1.25rem;font-weight:400}
+.certs{display:flex;flex-wrap:wrap;gap:8px;margin-top:1rem}
+.cert-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.18);padding:5px 12px;border-radius:2px;letter-spacing:.06em}
+.values-list{list-style:none;margin-top:2rem;display:flex;flex-direction:column;gap:1rem}
+.values-list li{display:flex;align-items:flex-start;gap:14px;padding:1rem 1.25rem;background:rgba(0,229,255,.03);border:1px solid var(--border);border-radius:4px;font-size:13.5px}
+.v-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.v-title{font-weight:700;display:block;margin-bottom:3px;font-size:14px}
+.v-desc{color:var(--muted2);font-size:12.5px}
+
+/* CONTATO */
+.contato-layout{display:grid;grid-template-columns:0.9fr 1.1fr;gap:4rem;align-items:start}
+.c-item{display:flex;align-items:center;gap:14px;padding:1rem 1.25rem;background:var(--card);border:1px solid var(--border);border-radius:5px;margin-bottom:1rem;transition:border-color .2s}
+.c-item:hover{border-color:var(--border2)}
+.c-icon{width:40px;height:40px;flex-shrink:0;background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.c-text p{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.c-text span{font-size:14px;color:var(--text);font-weight:500}
+.whats-block{margin-top:1.5rem;background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.25);border-radius:6px;padding:1.5rem;text-align:center}
+.whats-block p{font-size:13px;color:var(--muted2);margin-bottom:1rem;line-height:1.6}
+.whats-block strong{color:var(--text);display:block;margin-bottom:4px;font-size:15px}
+.btn-whats-lg{display:inline-flex;align-items:center;gap:10px;background:var(--whats);color:#fff;border:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;padding:14px 28px;border-radius:4px;cursor:pointer;transition:all .25s;text-decoration:none;width:100%;justify-content:center}
+.btn-whats-lg svg{width:22px;height:22px;fill:#fff}
+.btn-whats-lg:hover{background:#1da851;transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,.4)}
+
+/* FORM */
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:rgba(17,30,48,.9);border:1px solid var(--border);border-radius:4px;padding:12px 16px;font-size:14px;font-family:'Syne',sans-serif;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,.08)}
+.form-group textarea{resize:vertical;min-height:110px}
+.form-group select option{background:var(--bg2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.btn-submit{width:100%;background:var(--accent);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:15px;border-radius:4px;cursor:pointer;transition:all .25s;margin-top:.5rem}
+.btn-submit:hover{background:#00ccee;box-shadow:0 6px 24px rgba(0,229,255,.4)}
+
+/* FLOAT WHATSAPP */
+.whats-float{position:fixed;bottom:2rem;right:2rem;z-index:600}
+.whats-float-btn{width:60px;height:60px;background:var(--whats);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 24px rgba(37,211,102,.5);transition:all .25s;animation:floatPulse 2.5s ease-in-out infinite}
+@keyframes floatPulse{0%,100%{box-shadow:0 4px 24px rgba(37,211,102,.4)}50%{box-shadow:0 4px 40px rgba(37,211,102,.7)}}
+.whats-float-btn:hover{transform:scale(1.1);background:#1da851}
+.whats-float-btn svg{width:32px;height:32px;fill:#fff}
+.whats-tooltip{position:absolute;bottom:70px;right:0;background:rgba(6,11,18,.95);border:1px solid rgba(37,211,102,.3);border-radius:8px;padding:14px 16px;width:230px;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;text-align:center}
+.whats-float:hover .whats-tooltip{opacity:1;transform:translateY(0);pointer-events:all}
+.whats-tooltip p{font-size:12px;color:var(--muted2);line-height:1.5;margin-bottom:10px}
+.whats-tooltip strong{color:#fff;font-size:13px;display:block;margin-bottom:4px}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 3.5rem 2rem}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;padding-bottom:2.5rem;border-bottom:1px solid var(--border)}
+.footer-brand p{font-size:13px;color:var(--muted);line-height:1.7;margin-top:1rem;max-width:260px}
+.footer-col h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text);margin-bottom:1rem;font-family:'JetBrains Mono',monospace}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.footer-col ul li button{font-size:13px;color:var(--muted);cursor:pointer;transition:color .2s;background:none;border:none;font-family:'Syne',sans-serif;padding:0;text-align:left}
+.footer-col ul li button:hover{color:var(--accent)}
+.footer-col ul li a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-col ul li a:hover{color:var(--accent)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-bottom p{font-size:12px;color:var(--muted)}
+.footer-bottom span{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(0,229,255,.3);letter-spacing:.06em}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border)}
+
+/* CTA BAND */
+.cta-band{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:4rem 3.5rem;text-align:center;position:relative;overflow:hidden}
+.cta-band::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,229,255,.05) 0%,transparent 70%);pointer-events:none}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:0 1.5rem}
+  .nav-links{display:none}
+  .nav-hamburger{display:flex}
+  .stats-inner{grid-template-columns:repeat(2,1fr)}
+  .section{padding:4rem 1.5rem}
+  .sobre-layout,.contato-layout{grid-template-columns:1fr;gap:2.5rem}
+  .footer-top{grid-template-columns:1fr 1fr;gap:2rem}
+  .img-mosaic{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .mosaic-item:first-child{grid-column:1/3}
+  .form-row{grid-template-columns:1fr}
+}
+@media(max-width:540px){
+  .stat-item{padding:1.5rem 1rem}
+  .hero h1{font-size:2.5rem}
+  .footer-top{grid-template-columns:1fr}
+  .products-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-btns{flex-direction:column;align-items:center}
+}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- WHATS FLOAT -->
+<div class="whats-float">
+  <div class="whats-tooltip">
+    <strong>Fale conosco agora!</strong>
+    <p>Atendimento rápido pelo WhatsApp. Resposta em minutos.</p>
+    <a href="https://wa.me/5518996048727?text=Olá!%20Vim%20pelo%20site%20da%20Safecore%20Tecnologia%20e%20gostaria%20de%20atendimento." target="_blank" class="btn-whats-lg" style="font-size:12px;padding:10px 16px;margin-top:4px">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Chamar no WhatsApp
+    </a>
+  </div>
+  <a href="https://wa.me/5518996048727?text=Olá!%20Vim%20pelo%20site%20da%20Safecore%20Tecnologia%20e%20gostaria%20de%20atendimento." target="_blank" style="text-decoration:none">
+    <button class="whats-float-btn" title="Falar pelo WhatsApp">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </button>
+  </a>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="logo" onclick="showPage('home')">
+    <div class="logo-hex"></div>
+    <span class="logo-text">Safe<em>core</em></span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" id="nav-home" onclick="showPage('home')">Início</button>
+    <button class="nav-link" id="nav-servicos" onclick="showPage('servicos')">Serviços</button>
+    <button class="nav-link" id="nav-produtos" onclick="showPage('produtos')">Produtos</button>
+    <button class="nav-link" id="nav-sobre" onclick="showPage('sobre')">Sobre</button>
+    <button class="nav-cta-btn" onclick="showPage('contato')">Orçamento →</button>
+  </div>
+  <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <button class="nav-link" onclick="showPage('home');toggleMenu()">Início</button>
+  <button class="nav-link" onclick="showPage('servicos');toggleMenu()">Serviços</button>
+  <button class="nav-link" onclick="showPage('produtos');toggleMenu()">Produtos</button>
+  <button class="nav-link" onclick="showPage('sobre');toggleMenu()">Sobre</button>
+  <button class="nav-link" onclick="showPage('contato');toggleMenu()">Orçamento</button>
+  <a href="https://wa.me/5518996048727?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20atendimento." target="_blank" style="text-decoration:none;margin-top:8px">
+    <button class="btn-whats" style="width:100%;justify-content:center">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </button>
+  </a>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <canvas id="particles-canvas"></canvas>
+    <div class="tech-grid"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge"><div class="badge-dot"></div>PRESIDENTE PRUDENTE — SP &nbsp;|&nbsp; SUPORTE 24/7</div>
+      <h1><span class="solid">Infraestrutura que</span><span class="accent">não para nunca</span></h1>
+      <p class="hero-desc">Redes, servidores, software e eletrônicos. A Safecore é o parceiro tecnológico completo para empresas que exigem performance, segurança e continuidade.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('servicos')">Explorar Serviços</button>
+        <a href="https://wa.me/5518996048727?text=Olá!%20Gostaria%20de%20atendimento%20da%20Safecore%20Tecnologia." target="_blank">
+          <button class="btn-whats"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Chamar no WhatsApp</button>
+        </a>
+        <button class="btn-ghost" onclick="showPage('contato')">Solicitar Orçamento</button>
+      </div>
+    </div>
+    <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
+  </section>
+
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat-item"><div class="stat-num">+200</div><div class="stat-label">Clientes</div></div>
+      <div class="stat-item"><div class="stat-num">8+</div><div class="stat-label">Anos no Mercado</div></div>
+      <div class="stat-item"><div class="stat-num">24/7</div><div class="stat-label">Suporte Ativo</div></div>
+      <div class="stat-item"><div class="stat-num">99.9%</div><div class="stat-label">Uptime</div></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>o que fazemos</span></div>
+    <h2>Soluções tecnológicas<br>end-to-end</h2>
+    <p class="section-sub">Da infraestrutura ao código, do hardware ao suporte — resolvemos cada desafio tecnológico da sua empresa com precisão e agilidade.</p>
+    <div class="services-grid">
+      <div class="svc-card"><span class="svc-card-num">01</span><div class="svc-icon-wrap">🌐</div><h3>Redes & Conectividade</h3><p>Projeto, implantação e manutenção de redes corporativas. LAN, WAN, Wi-Fi 6, VPN e VLAN para ambientes de alto desempenho.</p><div class="svc-tags"><span class="stag">LAN/WAN</span><span class="stag">Wi-Fi 6</span><span class="stag">VPN</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">02</span><div class="svc-icon-wrap">🛡️</div><h3>Segurança & Firewall</h3><p>Firewall UTM, monitoramento de ameaças em tempo real e políticas de segurança baseadas em Zero Trust para proteger seu ambiente.</p><div class="svc-tags"><span class="stag">UTM</span><span class="stag">IDS/IPS</span><span class="stag">Zero Trust</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">03</span><div class="svc-icon-wrap">🖥️</div><h3>Infraestrutura & Servidores</h3><p>Servidores físicos e virtualizados, storage, backup automatizado e ambientes de alta disponibilidade para sua operação.</p><div class="svc-tags"><span class="stag">Windows Server</span><span class="stag">Linux</span><span class="stag">VMware</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">04</span><div class="svc-icon-wrap">☁️</div><h3>Cloud & DevOps</h3><p>Migração para nuvem, arquitetura AWS/Azure/GCP, containers Docker e Kubernetes, CI/CD e automação de deploys.</p><div class="svc-tags"><span class="stag">AWS</span><span class="stag">Azure</span><span class="stag">Docker</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">05</span><div class="svc-icon-wrap">⚙️</div><h3>Desenvolvimento de Software</h3><p>Sistemas web, ERP sob medida, APIs RESTful, integrações e automação de processos com tecnologias modernas e escaláveis.</p><div class="svc-tags"><span class="stag">Web App</span><span class="stag">REST API</span><span class="stag">ERP</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">06</span><div class="svc-icon-wrap">🔧</div><h3>Suporte Técnico 24/7</h3><p>Helpdesk remoto e presencial com SLA personalizado, manutenção preventiva agendada e atendimento de emergência.</p><div class="svc-tags"><span class="stag">Helpdesk</span><span class="stag">SLA</span><span class="stag">On-site</span></div></div>
+    </div>
+
+    <div class="img-mosaic">
+      <div class="mosaic-item"><img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80" alt="Data center"><div class="mosaic-overlay"></div><div class="mosaic-label">Infraestrutura de Data Center</div></div>
+      <div class="mosaic-item"><img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&q=80" alt="Redes"><div class="mosaic-overlay"></div><div class="mosaic-label">Redes Corporativas</div></div>
+      <div class="mosaic-item"><img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&q=80" alt="Tecnologia"><div class="mosaic-overlay"></div><div class="mosaic-label">Conectividade</div></div>
+      <div class="mosaic-item"><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&q=80" alt="Código"><div class="mosaic-overlay"></div><div class="mosaic-label">Desenvolvimento</div></div>
+      <div class="mosaic-item"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&q=80" alt="Hardware"><div class="mosaic-overlay"></div><div class="mosaic-label">Hardware</div></div>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <div style="position:relative;max-width:600px;margin:0 auto">
+      <div class="sec-eyebrow" style="justify-content:center"><div class="sec-eyebrow-line"></div><span>pronto para começar?</span><div class="sec-eyebrow-line"></div></div>
+      <h2 style="font-size:2rem;margin-bottom:1rem">Orçamento gratuito em 2 horas</h2>
+      <p style="color:var(--muted2);font-size:15px;margin-bottom:2rem;line-height:1.7">Nossa equipe analisa sua necessidade e retorna com uma proposta personalizada no mesmo dia.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-primary" onclick="showPage('contato')">Solicitar Orçamento</button>
+        <a href="https://wa.me/5518996048727?text=Olá!%20Preciso%20de%20um%20orçamento%20Safecore." target="_blank">
+          <button class="btn-whats"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>WhatsApp</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVIÇOS -->
+<div class="page" id="page-servicos">
+  <div style="padding-top:70px;background:var(--bg2);border-bottom:1px solid var(--border)">
+    <div style="max-width:1180px;margin:0 auto;padding:3rem 3.5rem">
+      <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>portfólio completo</span></div>
+      <h2>O que a Safecore entrega</h2>
+      <p style="color:var(--muted2);font-size:16px;max-width:520px;line-height:1.7">Soluções técnicas com equipe especializada, SLA definido e suporte contínuo para manter sua operação sempre no ar.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="services-grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+      <div class="svc-card"><span class="svc-card-num">01</span><div class="svc-icon-wrap">🌐</div><h3>Redes & Conectividade</h3><p>Projeto de redes LAN/WAN corporativas. Cabeamento estruturado, wireless Wi-Fi 6, gestão de VLAN, QoS e controle de largura de banda.</p><div class="svc-tags"><span class="stag">LAN/WAN</span><span class="stag">Wi-Fi 6</span><span class="stag">VLAN</span><span class="stag">QoS</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">02</span><div class="svc-icon-wrap">🛡️</div><h3>Segurança de Rede</h3><p>Firewall UTM, IDS/IPS, controle de acesso por identidade, segmentação e políticas corporativas baseadas em arquitetura Zero Trust.</p><div class="svc-tags"><span class="stag">Firewall UTM</span><span class="stag">IDS/IPS</span><span class="stag">Zero Trust</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">03</span><div class="svc-icon-wrap">🖥️</div><h3>Servidores & Virtualização</h3><p>Dimensionamento e configuração de servidores físicos/virtuais (VMware, Hyper-V, Proxmox). Storage, NAS, backup e alta disponibilidade.</p><div class="svc-tags"><span class="stag">VMware</span><span class="stag">Hyper-V</span><span class="stag">Proxmox</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">04</span><div class="svc-icon-wrap">☁️</div><h3>Cloud & Migração</h3><p>Migração planejada para AWS, Azure ou GCP. Containerização com Docker e Kubernetes, pipelines CI/CD e monitoramento avançado.</p><div class="svc-tags"><span class="stag">AWS</span><span class="stag">Azure</span><span class="stag">Kubernetes</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">05</span><div class="svc-icon-wrap">⚙️</div><h3>Desenvolvimento de Software</h3><p>Sistemas de gestão (ERP/CRM), portais web, APIs RESTful, integrações entre plataformas e automação com arquitetura moderna.</p><div class="svc-tags"><span class="stag">Web App</span><span class="stag">API REST</span><span class="stag">ERP/CRM</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">06</span><div class="svc-icon-wrap">📹</div><h3>CFTV & Monitoramento</h3><p>Câmeras IP e analógicas, NVR, DVR e sistemas de monitoramento remoto 24/7 com alertas inteligentes e armazenamento em nuvem.</p><div class="svc-tags"><span class="stag">IP Cameras</span><span class="stag">NVR/DVR</span><span class="stag">Remoto</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">07</span><div class="svc-icon-wrap">🖨️</div><h3>Gestão de Impressão</h3><p>Outsourcing de impressão (cost per page), gerenciamento de parque, manutenção preventiva e abastecimento de suprimentos originais.</p><div class="svc-tags"><span class="stag">Outsourcing</span><span class="stag">Manutenção</span><span class="stag">Suprimentos</span></div></div>
+      <div class="svc-card"><span class="svc-card-num">08</span><div class="svc-icon-wrap">🔧</div><h3>Suporte Técnico 24/7</h3><p>Contrato com SLA personalizado, helpdesk remoto e presencial, manutenção preventiva agendada e atendimento emergencial.</p><div class="svc-tags"><span class="stag">Helpdesk</span><span class="stag">SLA</span><span class="stag">On-site</span></div></div>
+    </div>
+    <div style="text-align:center;margin-top:3.5rem;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-primary" onclick="showPage('contato')">Solicitar Proposta</button>
+      <a href="https://wa.me/5518996048727?text=Olá!%20Preciso%20de%20informações%20sobre%20os%20serviços%20da%20Safecore." target="_blank">
+        <button class="btn-whats"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Tirar Dúvidas</button>
+      </a>
+    </div>
+  </section>
+</div>
+
+<!-- PRODUTOS -->
+<div class="page" id="page-produtos">
+  <div style="padding-top:70px;background:var(--bg2);border-bottom:1px solid var(--border)">
+    <div style="max-width:1180px;margin:0 auto;padding:3rem 3.5rem">
+      <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>loja de hardware</span></div>
+      <h2>Eletrônicos & Informática</h2>
+      <p style="color:var(--muted2);font-size:16px;max-width:520px;line-height:1.7">Equipamentos das melhores marcas com garantia, nota fiscal e suporte técnico especializado pós-venda.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="products-grid">
+      <div class="prod-card"><img class="prod-img" src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80" alt="Notebooks"><div class="prod-body"><h3>Notebooks</h3><p>Linha empresarial e gamer de todas as marcas líderes</p><div class="prod-price">A partir de R$ 2.499</div></div></div>
+      <div class="prod-card"><img class="prod-img" src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400&q=80" alt="Desktops"><div class="prod-body"><h3>Desktops & Workstations</h3><p>Computadores para uso profissional e alto desempenho</p><div class="prod-price">A partir de R$ 1.899</div></div></div>
+      <div class="prod-card"><img class="prod-img" src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=80" alt="Servidores"><div class="prod-body"><h3>Servidores</h3><p>Rack e tower Dell, HP, Lenovo com garantia de fábrica</p><div class="prod-price">A partir de R$ 8.900</div></div></div>
+      <div class="prod-card"><img class="prod-img" src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&q=80" alt="Redes"><div class="prod-body"><h3>Equipamentos de Rede</h3><p>Switches, roteadores, APs — Cisco, Mikrotik, Intelbras</p><div class="prod-price">A partir de R$ 349</div></div></div>
+      <div class="prod-card"><img class="prod-img" src="https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400&q=80" alt="Monitores"><div class="prod-body"><h3>Monitores</h3><p>Full HD, 2K e 4K para uso profissional e criativo</p><div class="prod-price">A partir de R$ 799</div></div></div>
+      <div class="prod-card"><img class="prod-img" src="https://images.unsplash.com/photo-1526406915894-7bcd65f60845?w=400&q=80" alt="Periféricos"><div class="prod-body"><h3>Periféricos</h3><p>Teclados, mouses, headsets e acessórios para escritório</p><div class="prod-price">A partir de R$ 49</div></div></div>
+      <div class="prod-card"><img class="prod-img" src="https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=400&q=80" alt="Storage"><div class="prod-body"><h3>Armazenamento</h3><p>SSDs NVMe, HDDs, NAS e pendrives de alta velocidade</p><div class="prod-price">A partir de R$ 89</div></div></div>
+      <div class="prod-card"><img class="prod-img" src="https://images.unsplash.com/photo-1588508065123-287b28e013da?w=400&q=80" alt="No-breaks"><div class="prod-body"><h3>No-breaks</h3><p>Proteção elétrica para equipamentos e servidores</p><div class="prod-price">A partir de R$ 299</div></div></div>
+    </div>
+    <div style="margin-top:3rem;padding:2rem;background:var(--card);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
+      <div>
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:6px">Cotação corporativa?</h3>
+        <p style="color:var(--muted2);font-size:13px">Preços especiais para empresas, licitações e grandes volumes.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="https://wa.me/5518996048727?text=Olá!%20Preciso%20de%20uma%20cotação%20de%20equipamentos%20Safecore." target="_blank">
+          <button class="btn-whats"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Pedir Cotação</button>
+        </a>
+        <button class="btn-primary" onclick="showPage('contato')">Enviar por E-mail</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SOBRE -->
+<div class="page" id="page-sobre">
+  <div style="padding-top:70px;background:var(--bg2);border-bottom:1px solid var(--border)">
+    <div style="max-width:1180px;margin:0 auto;padding:3rem 3.5rem">
+      <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>nossa história</span></div>
+      <h2>Safecore Tecnologia</h2>
+      <p style="color:var(--muted2);font-size:16px;max-width:520px;line-height:1.7">Parceiro estratégico em TI para empresas de Presidente Prudente e região — há mais de 8 anos no mercado.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="sobre-layout">
+      <div>
+        <div class="sobre-img-wrap">
+          <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80" alt="Equipe Safecore">
+          <div class="sobre-img-badge"><strong>+8 anos</strong><span>no mercado</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+          <div style="border-radius:4px;overflow:hidden;height:160px"><img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&q=80" alt="Suporte" style="width:100%;height:100%;object-fit:cover;filter:brightness(.65)"></div>
+          <div style="border-radius:4px;overflow:hidden;height:160px"><img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400&q=80" alt="Técnico" style="width:100%;height:100%;object-fit:cover;filter:brightness(.65)"></div>
+        </div>
+      </div>
+      <div class="sobre-text">
+        <p>A <strong style="color:var(--text)">Safecore Tecnologia</strong> foi fundada com uma missão clara: tornar soluções tecnológicas de alto nível acessíveis para empresas de todos os portes em Presidente Prudente e toda a região.</p>
+        <p>Atuamos em toda a cadeia de TI — da infraestrutura física ao software personalizado — com uma equipe de especialistas certificados comprometida com resultados reais e mensuráveis.</p>
+        <p>Nossa abordagem é sempre consultiva: entendemos o seu negócio antes de propor qualquer solução, garantindo que cada investimento em tecnologia gere retorno concreto.</p>
+        <div style="margin-top:2rem">
+          <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>certificações</span></div>
+          <div class="certs"><span class="cert-badge">Microsoft Partner</span><span class="cert-badge">Cisco Certified</span><span class="cert-badge">CompTIA A+</span><span class="cert-badge">AWS Partner</span><span class="cert-badge">Intelbras Autorizado</span></div>
+        </div>
+        <ul class="values-list">
+          <li><div class="v-icon">🎯</div><div><span class="v-title">Comprometimento Total</span><span class="v-desc">Cada projeto tratado com o mesmo cuidado que teríamos com o nosso próprio negócio.</span></div></li>
+          <li><div class="v-icon">🔍</div><div><span class="v-title">Transparência</span><span class="v-desc">Comunicação clara em todas as etapas — sem surpresas na conta final.</span></div></li>
+          <li><div class="v-icon">⚡</div><div><span class="v-title">Agilidade</span><span class="v-desc">Resposta rápida e execução sem burocracia, porque o seu tempo tem valor.</span></div></li>
+          <li><div class="v-icon">🏆</div><div><span class="v-title">Excelência Técnica</span><span class="v-desc">Equipe constantemente atualizada com as mais modernas tecnologias do mercado.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- CONTATO -->
+<div class="page" id="page-contato">
+  <div style="padding-top:70px;background:var(--bg2);border-bottom:1px solid var(--border)">
+    <div style="max-width:1180px;margin:0 auto;padding:3rem 3.5rem">
+      <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>fale conosco</span></div>
+      <h2>Entre em contato</h2>
+      <p style="color:var(--muted2);font-size:16px;max-width:520px;line-height:1.7">Resposta em até 2 horas no horário comercial. Para urgências, use o WhatsApp — respondemos em minutos.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="contato-layout">
+      <div>
+        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:1.75rem">Informações de contato</h3>
+        <div class="c-item"><div class="c-icon">📞</div><div class="c-text"><p>Telefone / WhatsApp</p><span>(18) 99604-8727</span></div></div>
+        <div class="c-item"><div class="c-icon">✉️</div><div class="c-text"><p>E-mail</p><span>michel.bernardosilva@gmail.com</span></div></div>
+        <div class="c-item"><div class="c-icon">📍</div><div class="c-text"><p>Localização</p><span>Presidente Prudente — SP</span></div></div>
+        <div class="c-item"><div class="c-icon">🕐</div><div class="c-text"><p>Atendimento Comercial</p><span>Seg–Sex, 08h às 18h</span></div></div>
+        <div class="c-item"><div class="c-icon">🚨</div><div class="c-text"><p>Suporte — Contratos Ativos</p><span>24 horas, 7 dias por semana</span></div></div>
+        <div class="whats-block">
+          <strong>Prefere conversar agora?</strong>
+          <p>Clique abaixo e fale diretamente com nossa equipe. Atendimento rápido, sem burocracia.</p>
+          <a href="https://wa.me/5518996048727?text=Olá!%20Vim%20pelo%20site%20da%20Safecore%20Tecnologia%20e%20gostaria%20de%20atendimento." target="_blank" class="btn-whats-lg">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Abrir WhatsApp Agora
+          </a>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:1.75rem">Enviar mensagem</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Nome completo</label><input type="text" placeholder="Seu nome"></div>
+          <div class="form-group"><label>Empresa (opcional)</label><input type="text" placeholder="Nome da empresa"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>E-mail</label><input type="email" placeholder="seu@email.com"></div>
+          <div class="form-group"><label>Telefone / WhatsApp</label><input type="tel" placeholder="(18) 9 9999-9999"></div>
+        </div>
+        <div class="form-group">
+          <label>Assunto</label>
+          <select>
+            <option value="">Selecione um assunto</option>
+            <option>Suporte Técnico Urgente</option>
+            <option>Orçamento — Rede / Infraestrutura</option>
+            <option>Orçamento — Desenvolvimento de Software</option>
+            <option>Orçamento — CFTV / Câmeras</option>
+            <option>Compra de Equipamentos</option>
+            <option>Contrato de Manutenção</option>
+            <option>Parceria Comercial</option>
+            <option>Outro assunto</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Mensagem</label><textarea placeholder="Descreva sua necessidade com o máximo de detalhes..."></textarea></div>
+        <button class="btn-submit" id="form-submit">Enviar Mensagem →</button>
+        <p style="font-size:11px;color:var(--muted);margin-top:12px;text-align:center;font-family:'JetBrains Mono',monospace;letter-spacing:.04em">Retorno em até 2h • Seg–Sex 08h–18h</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo"><div class="logo-hex" style="width:28px;height:28px"></div><span class="logo-text" style="font-size:17px">Safe<em>core</em></span></div>
+      <p>Soluções completas em tecnologia para empresas que não param. Presidente Prudente — SP.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Serviços</h4>
+      <ul>
+        <li><button onclick="showPage('servicos')">Redes & Conectividade</button></li>
+        <li><button onclick="showPage('servicos')">Infraestrutura</button></li>
+        <li><button onclick="showPage('servicos')">Cloud & DevOps</button></li>
+        <li><button onclick="showPage('servicos')">Software</button></li>
+        <li><button onclick="showPage('servicos')">Suporte 24/7</button></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Empresa</h4>
+      <ul>
+        <li><button onclick="showPage('sobre')">Sobre nós</button></li>
+        <li><button onclick="showPage('produtos')">Produtos</button></li>
+        <li><button onclick="showPage('contato')">Orçamento</button></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contato</h4>
+      <ul>
+        <li><a href="https://wa.me/5518996048727" target="_blank">(18) 99604-8727</a></li>
+        <li><a href="mailto:michel.bernardosilva@gmail.com">michel.bernardosilva@gmail.com</a></li>
+        <li><a>Presidente Prudente — SP</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Safecore Tecnologia. Todos os direitos reservados.</p>
+    <span>SAFECORE.TECH // v2.0</span>
+  </div>
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0;
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY;
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  setTimeout(()=>{ring.style.left=mx+'px';ring.style.top=my+'px';},80);
+});
+document.querySelectorAll('button,a,.svc-card,.prod-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='18px';cursor.style.height='18px';ring.style.width='52px';ring.style.height='52px'});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px'});
+});
+
+// PARTICLES CANVAS
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+let W,H;
+function resize(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight}
+window.addEventListener('resize',resize);
+resize();
+
+class Particle{
+  constructor(){this.reset(true)}
+  reset(i){this.x=Math.random()*W;this.y=i?Math.random()*H:H+10;this.r=Math.random()*1.5+.3;this.speed=Math.random()*.4+.1;this.pulse=Math.random()*Math.PI*2}
+  update(){this.y-=this.speed;this.pulse+=.015;if(this.y<-10)this.reset(false)}
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,229,255,${Math.sin(this.pulse)*.25+.25})`;ctx.fill()}
+}
+class Node{
+  constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.r=Math.random()*2+1}
+  update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1}
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle='rgba(0,229,255,.55)';ctx.fill()}
+}
+
+const particles=[],nodes=[];
+for(let i=0;i<120;i++)particles.push(new Particle());
+for(let i=0;i<55;i++)nodes.push(new Node());
+
+function drawNet(){
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+    const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<130){ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=`rgba(0,229,255,${(1-d/130)*.12})`;ctx.lineWidth=.5;ctx.stroke()}
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{p.update();p.draw()});
+  nodes.forEach(n=>{n.update();n.draw()});
+  drawNet();
+  requestAnimationFrame(animate);
+}
+animate();
+
+// NAV SCROLL
+window.addEventListener('scroll',()=>document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>30));
+
+// PAGE NAV
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const el=document.getElementById('nav-'+id);
+  if(el)el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='home')resize();
+}
+
+// MOBILE MENU
+function toggleMenu(){document.getElementById('mobile-menu').classList.toggle('open')}
+
+// FORM
+document.getElementById('form-submit').addEventListener('click',function(){
+  this.textContent='✓ Mensagem enviada com sucesso!';
+  this.style.background='#00cc88';
+  setTimeout(()=>{this.textContent='Enviar Mensagem →';this.style.background=''},3500);
+});
+</script>
+</body>
+</html>
