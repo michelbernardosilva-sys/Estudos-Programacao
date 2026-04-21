@@ -20,15 +20,13 @@ Acima de 720 dias = alíquota de 15% de IR.
 Atenção! O programa deve consistir se o investimento fornecido é válido, ou seja, 1, 2 o 3.
 
 Modelo de saída:
+    MENU DE INVESTIMENTO   
 
-========================================
-     MENU DE INVESTIMENTO   
-========================================
 Escolha o tipo de investimento:
 1- CDB
 2- LCI
 3- LCA
-========================================
+
 Digite o tipo de investimento (1, 2 ou 3): 1
 Digite o valor a ser resgatado: 10
 Digite o número de dias que o valor permaneceu investido: 10
